@@ -1,5 +1,14 @@
 version: 2.1
+orbs:
+  slack: circleci/slack@4.9.3
 
+  commands:
+    notify_on_failure:
+      steps:
+        - slack/notify:
+          event: fail
+          channel: cicd-pipeline
+          template: basic-fail-1
 # commands:
 #   destroy-environment:
 #     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -49,6 +58,7 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-deps
+      - notify_on_failure
 
   build-backend:
     docker:
@@ -66,6 +76,7 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-deps
+      - notify_on_failure
 
 
   test-frontend:
@@ -81,6 +92,8 @@ jobs:
             cd frontend
             npm install
             npm test
+      - notify_on_failure
+
   test-backend:
     docker:
       - image: cimg/node:13.8.0
@@ -94,6 +107,7 @@ jobs:
             cd backend
             npm install
             npm test
+      - notify_on_failure
   scan-frontend:
     docker:
       - image: cimg/node:13.8.0
@@ -106,8 +120,9 @@ jobs:
           command: |
             cd frontend
             npm install
-
+            npm audit fix --force --audit-level=critical
             npm audit --audit-level=critical
+      - notify_on_failure
   scan-backend:
     docker:
       - image: cimg/node:13.8.0
@@ -120,8 +135,10 @@ jobs:
           command: |
             cd backend
             npm install
-            
+            npm audit fix --force --audit-level=critical
+            npm audit fix --force --audit-level=critical
             npm audit --audit-level=critical
+      - notify_on_failure
 
 
 #   deploy-infrastructure:
@@ -289,7 +306,14 @@ jobs:
 #               # your code here
 #             fi
             
-
+  notify_on_success:
+    docker:
+      - image:  cimg/base:stable
+    steps:
+      - slack/notify:
+          event: pass
+          channel: cicd-pipeline
+          template: success_tagged_deployment_1
 workflows:
   default:
     jobs:
@@ -303,6 +327,12 @@ workflows:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
+      - notify_on_success:
+          requires:
+            - test-frontend
+            - test-backend
+            - scan-backend
+            - scan-frontend
       # - deploy-infrastructure:
       #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       #     filters:
