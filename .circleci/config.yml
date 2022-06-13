@@ -4,11 +4,11 @@ orbs:
 
 commands:
   notify_on_failure:
-      steps:
-        - slack/notify:
-            event: fail
-            channel: cicd-pipeline
-            template: basic_fail_1
+    steps:
+      - slack/notify:
+          event: fail
+          channel: cicd-pipeline
+          template: basic_fail_1
 
   install_awscli:
     description: Install Aws CLI v2
@@ -21,10 +21,10 @@ commands:
             sudo ./aws/install
 
   install_ansible:
-    description: Install Ansible CLI 
+    description: Install Ansible CLI
     steps:
-      - run: 
-          name: Install Ansible CLI 
+      - run:
+          name: Install Ansible CLI
           command: |
             sudo apt update
             sudo apt install software-properties-common -y
@@ -41,19 +41,19 @@ commands:
             sudo apt install -y nodejs
 
   destroy-environment:
-      description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-      parameters:
-        Workflow_ID:
-          type: string
-          default: ${CIRCLE_WORKFLOW_ID:0:7}
-      steps:
-        - run:
-            name: Destroy environments
-            when: on_fail
-            command: |
-              aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.Workflow_ID >>
-              aws s3 rm s3://udapeople-<<parameters.Workflow_ID>> --recursive
-              aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.Workflow_ID >>
+    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    parameters:
+      Workflow_ID:
+        type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
+    steps:
+      - run:
+          name: Destroy environments
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.Workflow_ID >>
+            aws s3 rm s3://udapeople-<<parameters.Workflow_ID>> --recursive
+            aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.Workflow_ID >>
 
   revert-migrations:
     description: Revert the last migration
@@ -209,28 +209,28 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.circleci/ansible/inventory.txt   
+            - project/.circleci/ansible/inventory.txt
 
-      - destroy-environment 
+      - destroy-environment
 
   configure-infrastructure:
-      docker:
-        - image: cimg/base:stable
-      steps:
-        - checkout
-        - install_awscli
-        - install_ansible
-        - add_ssh_keys:
-            fingerprints: ["a2:e5:c0:2e:86:a7:5e:38:c4:ef:b3:05:51:85:d2:4a"]
-        - attach_workspace:
-            at: ~/
-        - run:
-            name: Configure Server
-            command: |
-              cd .circleci/ansible
-              cat inventory.txt
-              ansible-playbook -i inventory.txt configure-server.yml
-        - destroy-environment   
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - install_awscli
+      - install_ansible
+      - add_ssh_keys:
+          fingerprints: ["a2:e5:c0:2e:86:a7:5e:38:c4:ef:b3:05:51:85:d2:4a"]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Configure Server
+          command: |
+            cd .circleci/ansible
+            cat inventory.txt
+            ansible-playbook -i inventory.txt configure-server.yml
+      - destroy-environment
 
   run-migrations:
     docker:
@@ -252,39 +252,39 @@ jobs:
               curl https://kvdb.io/${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi
       - destroy-environment
-      - revert-migrations     
+      - revert-migrations
 
   deploy-frontend:
-      docker:
-        - image: cimg/base:stable
-      steps:
-        - checkout
-        - install_awscli
-        - install_nodejs
-        - restore_cache:
-            keys: [frontend-deps]
-        - run:
-            name: Install dependencies
-            command: |
-              cd frontend
-              npm install
-        - run:
-            name: Get backend url
-            command: |
-              BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
-                --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-                --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                --output text)
-              echo "API_URL=http://${BACKEND_PUBLIC_IP}:3030" >> frontend/.env
-              cat frontend/.env
-        - run:
-            name: Deploy frontend objects
-            command: |
-              cd frontend
-              npm run build
-              aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-        - destroy-environment
-        - revert-migrations  
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - install_awscli
+      - install_nodejs
+      - restore_cache:
+          keys: [frontend-deps]
+      - run:
+          name: Install dependencies
+          command: |
+            cd frontend
+            npm install
+      - run:
+          name: Get backend url
+          command: |
+            BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --output text)
+            echo "API_URL=http://${BACKEND_PUBLIC_IP}:3030" >> frontend/.env
+            cat frontend/.env
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            npm run build
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+      - destroy-environment
+      - revert-migrations
 
   deploy-backend:
     docker:
@@ -323,7 +323,7 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment
-      - revert-migrations   
+      - revert-migrations
 
   smoke-test:
     docker:
@@ -357,7 +357,7 @@ jobs:
               exit 1
             fi
       - destroy-environment
-      - revert-migrations  
+      - revert-migrations
 
   cloudfront-update:
     docker:
@@ -430,7 +430,7 @@ workflows:
       - scan-frontend:
           requires: [build-frontend]
       - notify_on_success:
-          requires: 
+          requires:
             - build-frontend
             - build-backend
             - test-frontend
