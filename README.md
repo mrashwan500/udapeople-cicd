@@ -1,13 +1,9 @@
-<<<<<<< HEAD
 
-#
 <h1 align="center">Udacity Advanced Cloud DevOps<br></h1>  
 
 
 <h3 align="center">Build CI/CD Pipelines, Monitoring & Logging<br>Give Your Application Auto-Deploy Superpowers<br>UdaPeople<i>(Cloud-Based Software)</i></h3>  
   
-
-* [License](#license)
 
 <h3 align="center">UdaPeople</h3>   
 
@@ -84,6 +80,4 @@ with Slack and E-mail notifications used for alerts.<br>"<small><i>the fictional
  </p>
  
 <!--- big <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>. -->
-=======
-# udapeople-cicd
->>>>>>> 0f976149e5bb2567dfc7a9a8b1a2fdb907036ed3
+
