@@ -5,23 +5,12 @@
 <h3 align="center">Build CI/CD Pipelines, Monitoring & Logging<br>Give Your Application Auto-Deploy Superpowers<br>UdaPeople<i>(Cloud-Based Software)</i></h3>  
   
 
-<h3 align="center">UdaPeople</h3>   
-
-<p align="center">
-  <img width="" height="" src="./udapeople.png">
-</p>
 <p align="center">
   A CI-CD pipeline for a client/server TypeScript project 
 hosted on AWS EC2 and CloudFront and monitored with Prometheus,<br>
 with Slack and E-mail notifications used for alerts.<br>"<small><i>the fictional "UdaPeople" Product is  (Cloud-Based Software) Product,  a revolutionary concept in Human Resources which promises to help small businesses care better for their most valuable resource: their people."</i></small>
 </p>
 
-
-<h3 align="center">UdaPeople Pipeline</h3>   
-
-<p align="center">
-  <img width="" height="" src="./udapeople-pipeline.png"  
-</p>
 
 ## Prerequisites
 
